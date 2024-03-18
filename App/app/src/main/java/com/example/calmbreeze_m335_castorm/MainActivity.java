@@ -21,13 +21,13 @@ public class MainActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-
-            Button loginButton = findViewById(R.id.loginButton);
-            loginButton.setOnClickListener(views -> {
-                startActivity(new Intent(MainActivity.this, MainActivity2.class));
-            });
-
             return insets;
+        });
+
+        Button loginButton = findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(view -> {
+            Intent resultIntent = new Intent(this, MainActivity2.class);
+            startActivity(resultIntent);
         });
     }
 }
