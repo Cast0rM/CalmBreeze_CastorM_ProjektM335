@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
             Button loginButton = findViewById(R.id.loginButton);
             loginButton.setOnClickListener(views -> {
+                startActivity(new Intent(MainActivity.this, MainActivity2.class));
             });
 
             return insets;
