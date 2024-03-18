@@ -28,6 +28,12 @@ public class MainActivity2 extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        Button startExperience = findViewById(R.id.startExperienceButton);
+        startExperience.setOnClickListener(view -> {
+            Intent experience = new Intent(this, Experience.class );
+            startActivity(experience);
+        });
     }
     @Override
     protected void onStart() {
