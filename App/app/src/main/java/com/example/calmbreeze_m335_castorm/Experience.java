@@ -36,6 +36,7 @@ public class Experience extends AppCompatActivity {
     private long timeMs;
     private final Handler handler = new Handler();
     private final long Countdown_Duration_MS = 1 * 30 * 1000;
+    private final long Countdown_Duration_MS = 10 * 60 * 1000;
     private String channelID = "firstNotification";
 
     @Override
@@ -75,19 +76,6 @@ public class Experience extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private boolean isAppInUse() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> runningProcesses = activityManager.getRunningAppProcesses();
-        if (runningProcesses != null) {
-            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
-                if (processInfo.processName.equals(getPackageName()) && processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void showNotification() {
