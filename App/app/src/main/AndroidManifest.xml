@@ -16,6 +16,9 @@
         android:theme="@style/Theme.CalmBreeze_M335_CastorM"
         tools:targetApi="31">
         <activity
+            android:name=".notification_activity"
+            android:exported="false" />
+        <activity
             android:name=".Experience"
             android:exported="false" />
         <activity

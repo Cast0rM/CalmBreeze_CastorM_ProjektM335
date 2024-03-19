@@ -1,4 +1,16 @@
 package com.example.calmbreeze_m335_castorm;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,16 +19,25 @@ import android.os.Vibrator;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.util.List;
 
 public class Experience extends AppCompatActivity {
     private TextView countdownText;
     private long timeMs;
     private final Handler handler = new Handler();
-    private final long Countdown_Duration_MS = 1 * 60 * 1000;
+    private final long Countdown_Duration_MS = 1 * 30 * 1000;
+    private String channelID = "firstNotification";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +48,11 @@ public class Experience extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(Experience.this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(Experience.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
 
         countdownText = findViewById(R.id.countdown);
         timeMs = System.currentTimeMillis();
@@ -43,11 +69,53 @@ public class Experience extends AppCompatActivity {
                 if (remainingTimeMs > 0) {
                     handler.postDelayed(this, 1000); // Update countdown every second
                 } else {
-                    // Benachrichtigung || Popup
+                    // Todo Vibration & Benachrichtigung
                     startVibration();
+                    showNotification();
                 }
             }
         });
+    }
+
+    private boolean isAppInUse() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcesses = activityManager.getRunningAppProcesses();
+        if (runningProcesses != null) {
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.processName.equals(getPackageName()) && processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void showNotification() {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelID)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("You did it!")
+                .setContentText("You ended your Meditation session")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        Intent intent = new Intent(this, notification_activity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("data", "You Finished");
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
+        notificationBuilder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelID);
+            if (notificationChannel == null) {
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                notificationChannel = new NotificationChannel(channelID, "cuidao", importance);
+                notificationChannel.setLightColor(Color.BLUE);
+                notificationChannel.enableVibration(true);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+        notificationManager.notify(0, notificationBuilder.build());
     }
 
     @Override
