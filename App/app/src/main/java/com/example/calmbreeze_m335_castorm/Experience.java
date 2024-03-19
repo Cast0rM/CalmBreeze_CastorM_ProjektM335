@@ -1,9 +1,6 @@
 package com.example.calmbreeze_m335_castorm;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.ActivityManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,25 +20,26 @@ import android.os.Vibrator;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.util.List;
-
-public class Experience extends AppCompatActivity {
+public class Experience extends AppCompatActivity implements SensorEventListener {
     private TextView countdownText;
     private long timeMs;
     private final Handler handler = new Handler();
     private final long Countdown_Duration_MS = 1 * 30 * 1000;
-    private final long Countdown_Duration_MS = 10 * 60 * 1000;
     private String channelID = "firstNotification";
+    SensorManager sensorManager;
+    Sensor accelerometer;
+    private static final float GRAVITY_THRESHOLD = 2.0f;
+    private boolean isBreathing = false;
+    private long lastInhalation = 0;
+    private TextView atemfrequenz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,9 @@ public class Experience extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(Experience.this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(Experience.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
@@ -56,6 +61,7 @@ public class Experience extends AppCompatActivity {
         }
 
         countdownText = findViewById(R.id.countdown);
+        atemfrequenz = findViewById(R.id.atemfrequenz);
         timeMs = System.currentTimeMillis();
         startCountdown();
     }
@@ -136,5 +142,34 @@ public class Experience extends AppCompatActivity {
 
         String countdownString = String.format("%02d:%02d", minutes, seconds);
         countdownText.setText(countdownString);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float y = event.values[1];
+
+            if (y > GRAVITY_THRESHOLD && !isBreathing) {
+                isBreathing = true;
+                long currentTime = System.currentTimeMillis();
+                if (lastInhalation != 0) {
+                    long timeDifference = currentTime - lastInhalation;
+                    double breathsPerMinute = 60000.0 / timeDifference;
+                    atemfrequenz.setText("Atemfrequenz: " + breathsPerMinute + " Atemzüge pro Minute");
+                }
+                lastInhalation = currentTime;
+            } else if (y < -GRAVITY_THRESHOLD && isBreathing) {
+                isBreathing = false;
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }
