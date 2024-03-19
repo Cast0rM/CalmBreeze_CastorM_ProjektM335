@@ -73,7 +73,7 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                fadeOutText();
+                fadeTextOut();
             }
         });
         if (count > 4) {
@@ -81,10 +81,6 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
     private void fadeTextOut(){
-        long delay = 3000;
-        fadeTextView.postDelayed(this::fadeOutText, delay);
-    }
-    private void fadeOutText(){
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(fadeTextView, "alpha", 1f,0f);
         fadeOut.setDuration(1000);
         fadeOut.setInterpolator(new AccelerateInterpolator());

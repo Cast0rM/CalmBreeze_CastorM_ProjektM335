@@ -42,7 +42,7 @@ public class Experience extends AppCompatActivity implements SensorEventListener
     private long lastInhalation = 0;
     private TextView atemfrequenz;
 
-    @Override
+    @Override   
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
