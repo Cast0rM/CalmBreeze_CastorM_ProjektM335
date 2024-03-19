@@ -62,7 +62,10 @@ public class MainActivity2 extends AppCompatActivity {
                 break;
             case 3:
                 fadeTextView.setText(getString(R.string.instruction3));
-                fadeTextView.setTextSize(35);
+                count++;
+                break;
+            case 4:
+                fadeTextView.setText(getString(R.string.instruction4));
                 count++;
                 break;
         }
@@ -73,12 +76,12 @@ public class MainActivity2 extends AppCompatActivity {
                 fadeOutText();
             }
         });
-        if (count > 3) {
+        if (count > 4) {
             count = 1; // Reset count to start over
         }
     }
     private void fadeTextOut(){
-        long delay = 1000;
+        long delay = 3000;
         fadeTextView.postDelayed(this::fadeOutText, delay);
     }
     private void fadeOutText(){
