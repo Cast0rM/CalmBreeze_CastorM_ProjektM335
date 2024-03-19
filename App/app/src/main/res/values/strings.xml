@@ -6,7 +6,8 @@
     <string name="startExperienceButton">Start Experience</string>
     <string name="instruction1">To Enjoy this experience</string>
     <string name="instruction2">Place your Smartphone</string>
-    <string name="instruction3">on your Chest and Start your experience</string>
+    <string name="instruction3">on your Chest and</string>
+    <string name="instruction4">start your experience</string>
     <string name="loadingAtemfrequenz">Atemfrequenz wird gemessen...</string>
     <string name="AppTitle">CalmBreeze-Timer</string>
 </resources>
