@@ -1,7 +1,9 @@
 package com.example.calmbreeze_m335_castorm;
-
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -41,8 +43,8 @@ public class Experience extends AppCompatActivity {
                 if (remainingTimeMs > 0) {
                     handler.postDelayed(this, 1000); // Update countdown every second
                 } else {
-                    // TODO Vibration && Popup || Benachrichtigung
-
+                    // Benachrichtigung || Popup
+                    startVibration();
                 }
             }
         });
@@ -59,6 +61,16 @@ public class Experience extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         timeMs = savedInstanceState.getLong("timeMs");
         startCountdown();
+    }
+
+    private void startVibration() {
+        Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                long vibration_Duration_MS = 3000;
+                vibrator.vibrate(VibrationEffect.createOneShot(vibration_Duration_MS, VibrationEffect.DEFAULT_AMPLITUDE));
+            }
+        }
     }
 
     private void updateCountdown(long remainingTimeMs) {
