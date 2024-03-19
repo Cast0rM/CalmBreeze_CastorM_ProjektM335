@@ -33,7 +33,7 @@ public class Experience extends AppCompatActivity implements SensorEventListener
     private TextView countdownText;
     private long timeMs;
     private final Handler handler = new Handler();
-    private final long Countdown_Duration_MS = 1 * 60 * 1000;
+    private final long Countdown_Duration_MS = 10 * 60 * 1000;
     private String channelID = "firstNotification";
     SensorManager sensorManager;
     Sensor accelerometer;
