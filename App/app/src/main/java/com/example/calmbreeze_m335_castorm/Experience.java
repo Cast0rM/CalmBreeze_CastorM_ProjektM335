@@ -69,7 +69,7 @@ public class Experience extends AppCompatActivity {
                 if (remainingTimeMs > 0) {
                     handler.postDelayed(this, 1000); // Update countdown every second
                 } else {
-                    // Todo Vibration & Benachrichtigung
+                    countdownText.setText("00:00");
                     startVibration();
                     showNotification();
                 }
