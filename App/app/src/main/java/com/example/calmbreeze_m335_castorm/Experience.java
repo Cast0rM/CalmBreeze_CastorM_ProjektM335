@@ -1,6 +1,7 @@
 package com.example.calmbreeze_m335_castorm;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -32,11 +33,11 @@ public class Experience extends AppCompatActivity implements SensorEventListener
     private TextView countdownText;
     private long timeMs;
     private final Handler handler = new Handler();
-    private final long Countdown_Duration_MS = 1 * 30 * 1000;
+    private final long Countdown_Duration_MS = 1 * 60 * 1000;
     private String channelID = "firstNotification";
     SensorManager sensorManager;
     Sensor accelerometer;
-    private static final float GRAVITY_THRESHOLD = 2.0f;
+    private static final float schnellWert = 1.3f;
     private boolean isBreathing = false;
     private long lastInhalation = 0;
     private TextView atemfrequenz;
@@ -148,21 +149,23 @@ public class Experience extends AppCompatActivity implements SensorEventListener
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
+    @SuppressLint("SetTextI18n")
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             float y = event.values[1];
 
-            if (y > GRAVITY_THRESHOLD && !isBreathing) {
+            if (y > schnellWert && !isBreathing) {
                 isBreathing = true;
                 long currentTime = System.currentTimeMillis();
                 if (lastInhalation != 0) {
                     long timeDifference = currentTime - lastInhalation;
                     double breathsPerMinute = 60000.0 / timeDifference;
+                    breathsPerMinute = Math.round(breathsPerMinute);
                     atemfrequenz.setText("Atemfrequenz: " + breathsPerMinute + " Atemzüge pro Minute");
                 }
                 lastInhalation = currentTime;
-            } else if (y < -GRAVITY_THRESHOLD && isBreathing) {
+            } else if (y < -schnellWert && isBreathing) {
                 isBreathing = false;
             }
         }
